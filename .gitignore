@@ -1,0 +1,15 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment
+.venv/
+env/
+
+# Ignore IDE files
+.idea/
+
+# Ignore dataset if large
+*.jpg
+*.png
+*.jpeg
