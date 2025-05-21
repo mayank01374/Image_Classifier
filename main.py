@@ -47,12 +47,12 @@ def load_dataset():
 
 
 def train_and_evaluate(X, y):
-    # Get the class names in order (as per label_idx)
+
     class_names = list(folders.keys())
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # SVM Classifier
+
     svm_clf = SVC(kernel='linear')
     svm_clf.fit(X_train, y_train)
     y_pred_svm = svm_clf.predict(X_test)
@@ -64,7 +64,7 @@ def train_and_evaluate(X, y):
                        columns=class_names))
     print("\n")
 
-    # LDA Classifier
+
     lda_clf = LinearDiscriminantAnalysis()
     lda_clf.fit(X_train, y_train)
     y_pred_lda = lda_clf.predict(X_test)
@@ -77,7 +77,7 @@ def train_and_evaluate(X, y):
 
 
 if __name__ == "__main__":
-    import pandas as pd  # Added for pretty confusion matrix display
+    import pandas as pd
 
     X, y = load_dataset()
     print(f"Dataset loaded. Total samples: {len(X)}")
