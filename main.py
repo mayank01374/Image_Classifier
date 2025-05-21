@@ -18,6 +18,7 @@ orientations = 9
 pixels_per_cell = (8, 8)
 cells_per_block = (2, 2)
 
+
 def extract_hog_features(image):
     return hog(image,
                orientations=orientations,
@@ -26,6 +27,7 @@ def extract_hog_features(image):
                block_norm='L2-Hys',
                transform_sqrt=True,
                feature_vector=True)
+
 
 def load_dataset():
     X, y = [], []
@@ -43,27 +45,40 @@ def load_dataset():
             y.append(label_idx)
     return np.array(X), np.array(y)
 
+
 def train_and_evaluate(X, y):
+    # Get the class names in order (as per label_idx)
+    class_names = list(folders.keys())
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-
+    # SVM Classifier
     svm_clf = SVC(kernel='linear')
     svm_clf.fit(X_train, y_train)
     y_pred_svm = svm_clf.predict(X_test)
     print("\n--- SVM Classification Report ---")
-    print(classification_report(y_test, y_pred_svm))
-    print("SVM Confusion Matrix:\n", confusion_matrix(y_test, y_pred_svm))
+    print(classification_report(y_test, y_pred_svm, target_names=class_names))
+    print("SVM Confusion Matrix:")
+    print(pd.DataFrame(confusion_matrix(y_test, y_pred_svm),
+                       index=class_names,
+                       columns=class_names))
+    print("\n")
 
-
+    # LDA Classifier
     lda_clf = LinearDiscriminantAnalysis()
     lda_clf.fit(X_train, y_train)
     y_pred_lda = lda_clf.predict(X_test)
     print("\n--- LDA Classification Report ---")
-    print(classification_report(y_test, y_pred_lda))
-    print("LDA Confusion Matrix:\n", confusion_matrix(y_test, y_pred_lda))
+    print(classification_report(y_test, y_pred_lda, target_names=class_names))
+    print("LDA Confusion Matrix:")
+    print(pd.DataFrame(confusion_matrix(y_test, y_pred_lda),
+                       index=class_names,
+                       columns=class_names))
+
 
 if __name__ == "__main__":
+    import pandas as pd  # Added for pretty confusion matrix display
+
     X, y = load_dataset()
     print(f"Dataset loaded. Total samples: {len(X)}")
     train_and_evaluate(X, y)
