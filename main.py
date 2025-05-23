@@ -5,7 +5,9 @@ from skimage.feature import hog
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+import pandas as pd
 
 folders = {
     "stressed": "stressed",
@@ -46,8 +48,15 @@ def load_dataset():
     return np.array(X), np.array(y)
 
 
-def train_and_evaluate(X, y):
+def display_confusion_matrix(y_true, y_pred, labels, title="Confusion Matrix"):
+    cm = confusion_matrix(y_true, y_pred, labels=range(len(labels)))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    disp.plot(cmap=plt.cm.Blues)
+    plt.title(title)
+    plt.show()
 
+
+def train_and_evaluate(X, y):
     class_names = list(folders.keys())
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -62,6 +71,7 @@ def train_and_evaluate(X, y):
     print(pd.DataFrame(confusion_matrix(y_test, y_pred_svm),
                        index=class_names,
                        columns=class_names))
+    display_confusion_matrix(y_test, y_pred_svm, class_names, title="SVM Confusion Matrix")
     print("\n")
 
 
@@ -74,11 +84,10 @@ def train_and_evaluate(X, y):
     print(pd.DataFrame(confusion_matrix(y_test, y_pred_lda),
                        index=class_names,
                        columns=class_names))
+    display_confusion_matrix(y_test, y_pred_lda, class_names, title="LDA Confusion Matrix")
 
 
 if __name__ == "__main__":
-    import pandas as pd
-
     X, y = load_dataset()
     print(f"Dataset loaded. Total samples: {len(X)}")
     train_and_evaluate(X, y)
